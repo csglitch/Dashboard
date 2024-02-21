@@ -8,9 +8,6 @@ interface LoginFormProps{
 }
 
 const  LoginForm = (props:LoginFormProps ) => {
-     
-      // const navigate = useNavigate();
-
   const [loginData, setloginData] = createSignal({
     email: "",
     password: "",

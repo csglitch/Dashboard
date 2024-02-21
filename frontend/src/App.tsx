@@ -1,4 +1,4 @@
-import { createSignal, type Component, onMount } from 'solid-js';
+import { createSignal, createEffect } from 'solid-js';
 import styles from './App.module.css';
 import SignUpForm from './form/signup';
 import './App.scss'
@@ -8,6 +8,7 @@ import AdminPage from "./dashboard/Admin"
 function App(){;
   const[isSignup,setIsSignup]= createSignal(false);
   const[isLogin, setIsLogin]= createSignal(false);
+  const [isLoading, setIsLoading] = createSignal(true);
   
 
   const toggleFormMode=()=>{
@@ -29,6 +30,9 @@ function App(){;
     } catch (error) {
       console.error('Error checking token');
     }
+    finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -47,29 +51,33 @@ function App(){;
     }
   };
 
-  onMount(() => {
+  createEffect(() => {
     checkToken();
   });
+
   return (
     <div class={styles.App}>
-     
-   { isLogin() ?(
-    <>     
-    <AdminPage/>
-    <button onClick={handleLogout}>Logout</button>
-    </>
-    
-   ):(
-    <>
-   {isSignup() ? <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin}/>:<SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup}/>}
-  <button onClick={toggleFormMode}>
-    {isSignup() ?  "New user? Sign Up":"Already have an account? Login"};
-  </button> 
-  </>
-   )}   
-   
-   </div>
+      {isLoading() ? ( 
+        <div>Loading...</div>
+      ) : isLogin() ? (
+        <>
+          <AdminPage />
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      ) : (
+        <>
+          {isSignup() ? (
+            <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin} />
+          ) : (
+            <SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup} />
+          )}
+          <button onClick={toggleFormMode}>
+            {isSignup() ? 'New user? Sign Up' : 'Already have an account? Login'}
+          </button>
+        </>
+      )}
+    </div>
   );
-};
+}
 
 export default App;

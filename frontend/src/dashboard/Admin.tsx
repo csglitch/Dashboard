@@ -36,13 +36,13 @@ const AdminPage = () => {
               <div class="flex-shrink-0"></div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-900 truncate">
-                  {user.firstName}
+                  First Name: {user.firstName}
                 </p>
                 <p class="text-sm font-medium text-gray-900 truncate">
-                  {user.lastName}
+                  Last Name: {user.lastName}
                 </p>
-                <p class="text-sm text-gray-500 truncate">{user.email}</p>
-                <p class="text-sm text-gray-500 truncate">{user.mobileNo}</p>
+                <p class="text-sm text-gray-500 truncate">Email id: {user.email}</p>
+                <p class="text-sm text-gray-500 truncate">Mobile No: {user.mobileNo}</p>
               </div>
             </div>
           </li>

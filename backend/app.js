@@ -28,20 +28,20 @@ try {
 const SECRET = process.env.SECRET_KEY;
 
 const authenticateJwt = (req, res, next) => {
-  // console.log("In authmiddleware")
   const token = req.cookies.authToken;
-  // console.log(req);
-  if (token) {
-    jwt.verify(token, SECRET, (err, user) => {
-      if (err) {
-        res.status(403).json({ message: 'Token Verification Failed' });
-      }
-      req.user = user;
-      next();
-    });
-  } else {
-    res.status(401).json({ message: 'Unauthorized Access' });
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized Access' });
   }
+
+  jwt.verify(token, SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Token Verification Failed' });
+    }
+
+    req.user = user;
+    next();
+  });
 };
 
 
@@ -72,21 +72,20 @@ app.post('/login', (req, res) => {
 
 
   if (isUser) {
-    role='user';
+    role = 'user';
     const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
     res.cookie('authToken', token, { httpOnly: true });
-    res.status(200).json({ message: `${role} Logged in successfully`, token });
+    return res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
-  else if(isAdmin){
-    console.log(isAdmin);
-    role='admin';
+
+  if (isAdmin) {
+    role = 'admin';
     const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
     res.cookie('authToken', token, { httpOnly: true });
-    res.status(200).json({ message: `${role} Logged in successfully`, token });
+    return res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
-   else {
-    res.status(403).json({ message: 'Invalid credentials' });
-  }
+
+  return res.status(403).json({ message: 'Invalid credentials' });
 });
 
 
@@ -142,7 +141,7 @@ app.get('/dashboard', authenticateJwt, checkUserRole, (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('authToken');
-  res.json({ message: 'Logout successful' });
+  return res.json({ message: 'Logout successful' });
 });
 
 app.listen(PORT, () => {
