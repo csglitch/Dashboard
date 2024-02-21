@@ -30,7 +30,7 @@ const SECRET = process.env.SECRET_KEY;
 const authenticateJwt = (req, res, next) => {
   // console.log("In authmiddleware")
   const token = req.cookies.authToken;
-  console.log(req);
+  // console.log(req);
   if (token) {
     jwt.verify(token, SECRET, (err, user) => {
       if (err) {
@@ -73,14 +73,14 @@ app.post('/login', (req, res) => {
 
   if (isUser) {
     role='user';
-    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
     res.cookie('authToken', token, { httpOnly: true });
     res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
   else if(isAdmin){
     console.log(isAdmin);
     role='admin';
-    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
     res.cookie('authToken', token, { httpOnly: true });
     res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
@@ -115,7 +115,7 @@ app.post('/signup', (req, res) => {
 
 
     fs.writeFileSync('./data/user.json', JSON.stringify(userData), 'utf-8');
-    const token = jwt.sign({ email, role: 'user' }, SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ email, role: 'user' }, SECRET, { expiresIn: '30s' });
     res.json({ message: 'User created successfully', token });
   }
 });
@@ -140,6 +140,10 @@ app.get('/dashboard', authenticateJwt, checkUserRole, (req, res) => {
   }
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('authToken');
+  res.json({ message: 'Logout successful' });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
