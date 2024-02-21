@@ -44,6 +44,7 @@ const authenticateJwt = (req, res, next) => {
   }
 };
 
+
 const checkUserRole = (req, res, next) => {
   const { email } = req.user;
 
@@ -59,6 +60,9 @@ const checkUserRole = (req, res, next) => {
   next();
 };
 
+app.post('/validate', authenticateJwt, (req, res) => {
+  res.json({ message: 'Token is valid' });
+});
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
