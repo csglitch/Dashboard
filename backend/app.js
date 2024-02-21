@@ -8,7 +8,10 @@ const app = express();
 const PORT = process.env.PORT;
 const cors = require('cors');
 const path = require('path');
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,6 +30,7 @@ const SECRET = process.env.SECRET_KEY;
 const authenticateJwt = (req, res, next) => {
   // console.log("In authmiddleware")
   const token = req.cookies.authToken;
+  console.log(req);
   if (token) {
     jwt.verify(token, SECRET, (err, user) => {
       if (err) {
@@ -124,8 +128,9 @@ app.get('/dashboard', authenticateJwt, checkUserRole, (req, res) => {
     res.send(response);
   } else if (role === 'user') {
     const {password, ...response} = userData.find(a=>a.email===email)
-    console.log(response);
-    res.send(response);
+    const data = []
+    data.push(response);
+    res.send(data);
   } else {
     res.status(403).json({ message: 'Invalid role' });
   }

@@ -29,6 +29,7 @@ const  LoginForm = (props:LoginFormProps ) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(loginData()),
+          credentials: 'include'
         });
         const message = await response.json();
         if (message.status) {
