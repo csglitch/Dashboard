@@ -1,25 +1,33 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT;
 const cors = require('cors');
+const path = require('path');
 app.use(cors());
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
-const userData = JSON.parse(fs.readFileSync('./data/user.json', 'utf-8'));
-const adminData = JSON.parse(fs.readFileSync('./data/admin.json', 'utf-8'));
+let userData, adminData;
+try {
+  userData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/user.json'), 'utf-8'));
+  adminData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/admin.json'), 'utf-8'));
+} catch (error) {
+  console.error('Error reading JSON file:', error.message);
+  process.exit(1); 
+}
 
 const SECRET = process.env.SECRET_KEY;
 
 const authenticateJwt = (req, res, next) => {
   // console.log("In authmiddleware")
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
+  const token = req.cookies.authToken;
+  if (token) {
     jwt.verify(token, SECRET, (err, user) => {
       if (err) {
         res.status(403).json({ message: 'Token Verification Failed' });
@@ -33,13 +41,17 @@ const authenticateJwt = (req, res, next) => {
 };
 
 const checkUserRole = (req, res, next) => {
-  // console.log("In checkrolemiddleware");
   const { email } = req.user;
 
   const isAdmin = adminData.some(a => a.email === email);
   const isUser = userData.some(a => a.email === email);
 
   req.user.role = isAdmin ? 'admin' : (isUser ? 'user' : null);
+
+  if (!req.user.role) {
+    return res.status(403).json({ message: 'Invalid role' });
+  }
+
   next();
 };
 
@@ -53,12 +65,15 @@ app.post('/login', (req, res) => {
 
   if (isUser) {
     role='user';
-    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
+    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '1h' });
+    res.cookie('authToken', token, { httpOnly: true });
     res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
   else if(isAdmin){
+    console.log(isAdmin);
     role='admin';
-    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '30s' });
+    const token = jwt.sign({ email, role }, SECRET, { expiresIn: '1h' });
+    res.cookie('authToken', token, { httpOnly: true });
     res.status(200).json({ message: `${role} Logged in successfully`, token });
   }
    else {
@@ -92,7 +107,7 @@ app.post('/signup', (req, res) => {
 
 
     fs.writeFileSync('./data/user.json', JSON.stringify(userData), 'utf-8');
-    const token = jwt.sign({ email, role: 'user' }, SECRET, { expiresIn: '30s' });
+    const token = jwt.sign({ email, role: 'user' }, SECRET, { expiresIn: '1h' });
     res.json({ message: 'User created successfully', token });
   }
 });

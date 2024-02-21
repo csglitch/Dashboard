@@ -1,1 +1,23 @@
-[{"firstName":"user1","lastName":"user2","email":"user1@user1.com","mobileNo":1234567890,"password":"user1"},{"firstName":"user2","lastName":"user2","email":"user2@user2.com","mobileNo":1234567890,"password":"user2"}]
+[
+  {
+    "firstName": "user1",
+    "lastName": "user1",
+    "email": "user1@user1.com",
+    "mobileNo": 1234567890,
+    "password": "user1"
+  },
+  {
+    "firstName": "Akash",
+    "lastName": "Yadav",
+    "email": "akash.yadav12@bajajfinserv.in",
+    "mobileNo": "1234567890",
+    "password": "wkjgberijgbewojg"
+  },
+  {
+    "firstName": "xfcg",
+    "lastName": "xfcgvh",
+    "email": "vfdzg@bajajfinserv.in",
+    "mobileNo": "0986768798",
+    "password": "ffff"
+  }
+]
