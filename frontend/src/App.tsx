@@ -12,27 +12,25 @@ import Home from "./dashboard/Home"
 
 function App(){
   const[isSignup,setIsSignup]= createSignal(false);
-  const[isAdmin,setIsAdmin]= createSignal(true);
-  const[isLogin, setIsLogin]= createSignal(true);
+  const[isLogin, setIsLogin]= createSignal(false);
   
 
   const toggleFormMode=()=>{
     setIsSignup(!isSignup());
   };
-  // const toggleFormMode2 = () => {
-  //   setIsLogin(!isLogin);
-  // };
+
+
   return (
     <div class={styles.App}>
      
    { isLogin() ?(
     <>     
-    { isAdmin() ?<AdminPage/>:<UsersPage/>}
+    <AdminPage/>
     </>
     
    ):(
     <>
-   {isSignup() ? <LoginForm/>:<SignUpForm/>}
+   {isSignup() ? <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin}/>:<SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup}/>}
   <button onClick={toggleFormMode}>
     {isSignup() ?  "New user? Sign Up":"Already have an account? Login"};
   </button> 

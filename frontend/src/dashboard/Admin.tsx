@@ -1,7 +1,7 @@
 // import { createSignal, onCleanup } from "solid-js";
 // import { User } from "./types"; // Assuming you have a User type defined
 import users from "../assets/users"
-const UsersPage = () => {
+const AdminPage = () => {
 //   const [users, setUsers] = createSignal<User[]>([]);
 
 //   // Fetch users when the component mounts
@@ -48,4 +48,4 @@ console.log("type of allUsers",  allUsers)
   );
 };
 
-export default UsersPage;
+export default AdminPage;

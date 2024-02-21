@@ -2,8 +2,12 @@ import { createSignal } from 'solid-js';
 import './signup.scss';
 
 import { Link } from 'solid-app-router';
+interface SignUpFormProps{
+  isSignup:boolean;
+  setIsSignup:(value:boolean)=>void;
+}
 
-function SignUpForm() {
+function SignUpForm(props: SignUpFormProps) {
   const [formData, setFormData] = createSignal({
     firstName:"",
     lastName: "",
@@ -13,7 +17,7 @@ function SignUpForm() {
    
     
   });
-
+  const { isSignup, setIsSignup } = props;
   const handleSubmit = async (e:Event) => {
     e.preventDefault();
     // if (formData().password !== formData().retypepassword) {
@@ -44,7 +48,7 @@ function SignUpForm() {
         console.error("Please enter a valid email address with the domain @bajajfinserv.in.");
         return;
       }
-    
+    setIsSignup(true);
     console.log('Signup Form submitted:', formData());
   };
   const validatemobileNo = (value: string) => {

@@ -2,17 +2,20 @@
 
 import { createSignal } from 'solid-js';
 import './login.scss';
+interface LoginFormProps{
+  isLogin: boolean;
+  setIsLogin:(value:boolean)=>void
+}
 
-
-const  LoginForm = ( ) => {
-      const[isAdmin,setIsAdmin]= createSignal(true);
+const  LoginForm = (props:LoginFormProps ) => {
+     
       // const navigate = useNavigate();
 
   const [loginData, setloginData] = createSignal({
     email: "",
     password: "",
   });
- 
+  const { isLogin, setIsLogin } = props;
   const handleFormSubmit = async (e: Event) => {
     e.preventDefault();
     if (!/^[\w.%+-]+@bajajfinserv\.in$/.test(loginData().email)) {
@@ -34,7 +37,7 @@ const  LoginForm = ( ) => {
       } catch (error) {
         console.error('Error submitting form:', error);
       }
-
+       setIsLogin(true) ;
 console.log('Login Form Submitted', loginData());
  };
 
