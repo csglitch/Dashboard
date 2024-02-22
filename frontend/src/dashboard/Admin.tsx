@@ -1,30 +1,30 @@
-import { createSignal, onCleanup, onMount } from 'solid-js';
-import { User } from '../assets/users';
+import { createSignal, onCleanup, onMount } from "solid-js";
+import { User } from "../assets/users";
 
 const AdminPage = () => {
   const allUsers: User[] = [];
 
   let [data, setData] = createSignal<User[]>([]);
 
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/dashboard',{
-          method: 'GET',
-          credentials: 'include'
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data: User[] = await response.json();
-        allUsers.length = 0; 
-        allUsers.push(...data);
-        setData(allUsers);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/dashboard", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
       }
-    };
+      const data: User[] = await response.json();
+      allUsers.length = 0;
+      allUsers.push(...data);
+      setData(allUsers);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    fetchData(); 
+  fetchData();
 
   return (
     <div class="container mx-auto">
@@ -41,8 +41,12 @@ const AdminPage = () => {
                 <p class="text-sm font-medium text-gray-900 truncate">
                   Last Name: {user.lastName}
                 </p>
-                <p class="text-sm text-gray-500 truncate">Email id: {user.email}</p>
-                <p class="text-sm text-gray-500 truncate">Mobile No: {user.mobileNo}</p>
+                <p class="text-sm text-gray-500 truncate">
+                  Email id: {user.email}
+                </p>
+                <p class="text-sm text-gray-500 truncate">
+                  Mobile No: {user.mobileNo}
+                </p>
               </div>
             </div>
           </li>

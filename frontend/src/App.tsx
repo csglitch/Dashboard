@@ -1,25 +1,25 @@
-import { createSignal, createEffect } from 'solid-js';
-import styles from './App.module.css';
-import SignUpForm from './form/signup';
-import './App.scss'
-import LoginForm from './form/login';
-import AdminPage from "./dashboard/Admin"
+import { createSignal, createEffect } from "solid-js";
+import styles from "./App.module.css";
+import SignUpForm from "./form/signup";
+import "./App.scss";
+import LoginForm from "./form/login";
+import AdminPage from "./dashboard/Admin";
 
-function App(){;
-  const[isSignup,setIsSignup]= createSignal(false);
-  const[isLogin, setIsLogin]= createSignal(false);
+function App() {
+
   const [isLoading, setIsLoading] = createSignal(true);
-  
+  const [isSignup, setIsSignup] = createSignal(true);
+  const [isLogin, setIsLogin] = createSignal(false);
 
-  const toggleFormMode=()=>{
+  const toggleFormMode = () => {
     setIsSignup(!isSignup());
   };
 
   const checkToken = async () => {
     try {
-      const response = await fetch('http://localhost:4000/validate', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("http://localhost:4000/validate", {
+        method: "POST",
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -28,36 +28,35 @@ function App(){;
         handleLogout();
       }
     } catch (error) {
-      console.error('Error checking token');
-    }
-    finally {
+      console.error("Error checking token");
+      handleLogout();
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:4000/logout', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("http://localhost:4000/logout", {
+        method: "POST",
+        credentials: "include",
       });
 
       if (response.ok) {
         setIsLogin(false);
-        setIsSignup(true);
       }
     } catch (error) {
-      console.error('Logout failed');
+      console.error("Logout failed");
     }
   };
 
   createEffect(() => {
     checkToken();
-  });
+  },[]);
 
   return (
     <div class={styles.App}>
-      {isLoading() ? ( 
+      {isLoading() ? (
         <div>Loading...</div>
       ) : isLogin() ? (
         <>
@@ -72,7 +71,9 @@ function App(){;
             <SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup} />
           )}
           <button onClick={toggleFormMode}>
-            {isSignup() ? 'New user? Sign Up' : 'Already have an account? Login'}
+            {isSignup()
+              ? "New user? Sign Up"
+              : "Already have an account? Login"}
           </button>
         </>
       )}
