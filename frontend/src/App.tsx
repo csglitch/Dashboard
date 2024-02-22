@@ -6,7 +6,6 @@ import LoginForm from "./form/login";
 import AdminPage from "./dashboard/Admin";
 
 function App() {
-
   const [isLoading, setIsLoading] = createSignal(true);
   const [isSignup, setIsSignup] = createSignal(true);
   const [isLogin, setIsLogin] = createSignal(false);
@@ -52,7 +51,7 @@ function App() {
 
   createEffect(() => {
     checkToken();
-  },[]);
+  }, []);
 
   return (
     <div class={styles.App}>

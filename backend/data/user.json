@@ -1,1 +1,51 @@
-[{"firstName":"user1","lastName":"user1","email":"user1@bajajfinserv.in","mobileNo":1234567890,"password":"user1"},{"firstName":"Akash","lastName":"Yadav","email":"akash.yadav12@bajajfinserv.in","mobileNo":"1234567890","password":"wkjgberijgbewojg"},{"firstName":"xfcg","lastName":"xfcgvh","email":"vfdzg@bajajfinserv.in","mobileNo":"0986768798","password":"ffff"},{"firstName":"User4","lastName":"User4","email":"weonfwf@bajajfinserv.in","mobileNo":"123145555","password":"hvvv"},{"firstName":"Chintan","lastName":"Shash","email":"chintanshah@bajajfinserv.in","mobileNo":"01234568765","password":"sdfgsdfgs"},{"firstName":"wrhwkjvbn","lastName":"er gn","email":"a@bajajfinserv.in","mobileNo":"3453453556","password":"a"},{"firstName":"rftgb","lastName":"cvgbh","email":"abcd@bajajfinserv.in","mobileNo":"5237982370","password":"abcd"}]
+[
+  {
+    "firstName": "user1",
+    "lastName": "user1",
+    "email": "user1@bajajfinserv.in",
+    "mobileNo": 1234567890,
+    "password": "user1"
+  },
+  {
+    "firstName": "Akash",
+    "lastName": "Yadav",
+    "email": "akash.yadav12@bajajfinserv.in",
+    "mobileNo": "1234567890",
+    "password": "wkjgberijgbewojg"
+  },
+  {
+    "firstName": "xfcg",
+    "lastName": "xfcgvh",
+    "email": "vfdzg@bajajfinserv.in",
+    "mobileNo": "0986768798",
+    "password": "ffff"
+  },
+  {
+    "firstName": "User4",
+    "lastName": "User4",
+    "email": "weonfwf@bajajfinserv.in",
+    "mobileNo": "123145555",
+    "password": "hvvv"
+  },
+  {
+    "firstName": "Chintan",
+    "lastName": "Shash",
+    "email": "chintanshah@bajajfinserv.in",
+    "mobileNo": "01234568765",
+    "password": "sdfgsdfgs"
+  },
+  {
+    "firstName": "wrhwkjvbn",
+    "lastName": "er gn",
+    "email": "a@bajajfinserv.in",
+    "mobileNo": "3453453556",
+    "password": "a"
+  },
+  {
+    "firstName": "rftgb",
+    "lastName": "cvgbh",
+    "email": "abcd@bajajfinserv.in",
+    "mobileNo": "5237982370",
+    "password": "abcd"
+  }
+]
