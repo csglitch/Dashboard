@@ -54,6 +54,7 @@ const authenticateJwt = (req, res, next) => {
     }
 
     req.user = user;
+    console.log(user);
     next();
   });
 };
@@ -74,6 +75,12 @@ const checkUserRole = (req, res, next) => {
   next();
 };
 
+app.get("/adminaccessreq", authenticateJwt, checkUserRole, (req, res) => {
+  const { role } = req.user;
+  if (role == "superadmin") return res.send(adminAccess);
+  else return res.json({ msg: "Unauthorized Access" });
+});
+
 app.post("/reqadmin", authenticateJwt, (req, res) => {
   const { firstName, email } = req.user;
   console.log(req);
@@ -87,38 +94,39 @@ app.post("/reqadmin", authenticateJwt, (req, res) => {
   res.json({ message: "Admin access requested successfully" });
 });
 
-app.post("/superadmin/approve", authenticateJwt, checkUserRole, (req, res) => {
+app.post("/superadmin", authenticateJwt, checkUserRole, (req, res) => {
   const { role } = req.user;
   const { email } = req.body;
+  const { decision } = req.body;
   console.log(email);
 
   if (role === "superadmin") {
-    const data = userData.find((a) => a.email === email);
-    adminData.push(data);
-    fs.writeFileSync("./data/admin.json", JSON.stringify(adminData), "utf-8");
-    adminAccess = adminAccess.filter((a) => a.email !== email);
-    fs.writeFileSync(
-      "./data/adminAccess.json",
-      JSON.stringify(adminAccess),
-      "utf-8"
-    );
-    res.json(`Admin access approved for ${email}`);
-  } else {
-    res.json("Invalid user - Not Superadmin");
-  }
-});
+    switch (decision) {
+      case "approve":
+        const data = userData.find((a) => a.email === email);
+        adminData.push(data);
+        fs.writeFileSync(
+          "./data/admin.json",
+          JSON.stringify(adminData),
+          "utf-8"
+        );
+        adminAccess = adminAccess.filter((a) => a.email !== email);
+        fs.writeFileSync(
+          "./data/adminAccess.json",
+          JSON.stringify(adminAccess),
+          "utf-8"
+        );
+        return res.json(`Admin access approved for ${email}`);
 
-app.post("/superadmin/deny", authenticateJwt, checkUserRole, (req, res) => {
-  const { role } = req.user;
-  const { email } = req.body;
-  if (role === "superadmin") {
-    adminAccess = adminAccess.filter((a) => a.email !== email);
-    fs.writeFileSync(
-      "./data/adminAccess.json",
-      JSON.stringify(adminAccess),
-      "utf-8"
-    );
-    res.json(`Admin access denied for ${email}`);
+      case "deny":
+        adminAccess = adminAccess.filter((a) => a.email !== email);
+        fs.writeFileSync(
+          "./data/adminAccess.json",
+          JSON.stringify(adminAccess),
+          "utf-8"
+        );
+        res.json(`Admin access denied for ${email}`);
+    }
   } else {
     res.json("Invalid user - Not Superadmin");
   }
@@ -146,6 +154,7 @@ app.post("/login", (req, res) => {
     expiresIn: tokenExpiresIn,
   });
   res.cookie("authToken", token, { httpOnly: true });
+  res.cookie("role", role, { httpOnly: true });
 
   if (!role) {
     return res.status(403).json({ message: "Invalid credentials" });
@@ -153,7 +162,7 @@ app.post("/login", (req, res) => {
 
   return res
     .status(200)
-    .json({ message: `${role} logged in successfully`, token });
+    .json({role: role, message: `${role} logged in successfully`, token });
 });
 
 app.post("/signup", (req, res) => {
@@ -211,6 +220,8 @@ app.get("/dashboard", authenticateJwt, checkUserRole, (req, res) => {
       const { password, ...resp } = userData.find((a) => a.email === email);
       const data = [];
       data.push(resp);
+      data[0].role = "user";
+      console.log(data);
       res.send(data);
   }
 

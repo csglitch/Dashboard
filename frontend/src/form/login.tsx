@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import "./login.scss";
+import { globalRole, setGlobalRole } from "../signals/signals";
 interface LoginFormProps {
   isLogin: boolean;
   setIsLogin: (value: boolean) => void;
@@ -29,9 +30,8 @@ const LoginForm = (props: LoginFormProps) => {
         credentials: "include",
       });
       const message = await response.json();
-      if (message.status) {
-        console.log(message);
-      }
+      setGlobalRole(message.role);
+      console.log(globalRole);
     } catch (error) {
       console.error("Error submitting form:", error);
     }

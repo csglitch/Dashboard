@@ -22,6 +22,7 @@ function App() {
       });
 
       if (response.ok) {
+        console.log(response);
         setIsLogin(true);
       } else {
         handleLogout();
@@ -49,6 +50,8 @@ function App() {
     }
   };
 
+
+
   createEffect(() => {
     checkToken();
   }, []);
@@ -57,23 +60,27 @@ function App() {
     <div class={styles.App}>
       {isLoading() ? (
         <div>Loading...</div>
-      ) : isLogin() ? (
-        <>
-          <AdminPage />
-          <button onClick={handleLogout}>Logout</button>
-        </>
       ) : (
         <>
-          {isSignup() ? (
-            <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin} />
+          {isLogin() ? (
+            <>
+              <AdminPage />
+              <button onClick={handleLogout}>Logout</button>
+            </>
           ) : (
-            <SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup} />
+            <>
+              {isSignup() ? (
+                <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin} />
+              ) : (
+                <SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup} />
+              )}
+              <button onClick={toggleFormMode}>
+                {isSignup()
+                  ? "New user? Sign Up"
+                  : "Already have an account? Login"}
+              </button>
+            </>
           )}
-          <button onClick={toggleFormMode}>
-            {isSignup()
-              ? "New user? Sign Up"
-              : "Already have an account? Login"}
-          </button>
         </>
       )}
     </div>
