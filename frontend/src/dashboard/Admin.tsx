@@ -18,11 +18,12 @@ const AdminPage = () => {
         },
         body: JSON.stringify({ email }),
       });
+      console.log(response);
 
       if (response.ok) {
-        // console.log("Admin access requested successfully");
+        window.alert("Admin access requested successfully");
       } else {
-        console.error("Failed to request admin access");
+        window.alert("Already requested");
       }
     } catch (error) {
       console.error("Error requesting admin access:", error);

@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT;
 const cors = require("cors");
 const path = require("path");
-const tokenExpiresIn = "2h";
+const tokenExpiresIn = "1hr";
 
 app.use(
   cors({
@@ -58,7 +58,7 @@ const authenticateJwt = (req, res, next) => {
     // console.log("authenticate jwt", user);
 
     req.user = user;
-    console.log(user);
+    // console.log(user);
     return next();
   });
 };
@@ -92,15 +92,20 @@ app.get("/adminaccessreq", authenticateJwt, checkUserRole, (req, res) => {
 
 app.post("/reqadmin", authenticateJwt, (req, res) => {
   const { firstName, email } = req.user;
-  console.log(req);
+  // console.log(req);
   const data = { firstName, email };
-  adminAccess.push(data);
-  fs.writeFileSync(
-    "./data/adminAccess.json",
-    JSON.stringify(adminAccess),
-    "utf-8"
-  );
-  return res.json({ message: "Admin access requested successfully" });
+  const isPresent = adminAccess.some((a) => a.email === email);
+  if (!isPresent) {
+    adminAccess.push(data);
+    fs.writeFileSync(
+      "./data/adminAccess.json",
+      JSON.stringify(adminAccess),
+      "utf-8"
+    );
+    return res.json({ message: "Admin access requested successfully" });
+  } else {
+    return res.ok(false);
+  }
 });
 
 app.post("/superadmin", authenticateJwt, checkUserRole, (req, res) => {

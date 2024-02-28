@@ -33,15 +33,14 @@ const LoginForm = (props: LoginFormProps) => {
       const message = await response.json();
       setGlobalRole(message.role);
       // console.log(globalRole);
-      if(message.role)
-        setIsLogin(true);
-      else{
+      if (message.role) setIsLogin(true);
+      else {
         window.alert("Wrong Credentials");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
-    
+
     // console.log("Login Form Submitted", loginData());
   };
 
