@@ -38,7 +38,7 @@ function SuperAdminPage() {
       });
 
       if (response.ok) {
-        console.log(`Request processed for ${email}`);
+        // console.log(`Request processed for ${email}`);
         fetchAdminAccessRequests();
       } else {
         console.error("Failed to deny admin access");

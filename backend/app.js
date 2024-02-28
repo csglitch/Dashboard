@@ -9,6 +9,7 @@ const PORT = process.env.PORT;
 const cors = require("cors");
 const path = require("path");
 const tokenExpiresIn = "2h";
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -43,6 +44,7 @@ const SECRET = process.env.SECRET_KEY;
 
 const authenticateJwt = (req, res, next) => {
   const token = req.cookies.authToken;
+  // console.log("token", token);
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized Access" });
@@ -50,29 +52,36 @@ const authenticateJwt = (req, res, next) => {
 
   jwt.verify(token, SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: "Token Verification Failed" });
+      return res.status(401).json({ message: "Token Verification Failed" });
     }
+
+    // console.log("authenticate jwt", user);
 
     req.user = user;
     console.log(user);
-    next();
+    return next();
   });
 };
 
 const checkUserRole = (req, res, next) => {
   const { email } = req.user;
+  let userRole = null;
 
-  if (superAdminData[0].email === email) req.user.role = "superadmin";
-  else if (adminData.some((a) => a.email === email)) req.user.role = "admin";
-  else if (userData.some((a) => a.email === email)) req.user.role = "user";
-  else req.user.role = null;
-
-  console.log(req.user.role);
-  if (!req.user.role) {
-    return res.status(403).json({ message: "Invalid role" });
+  if (superAdminData[0].email === email) {
+    userRole = "superadmin";
+  } else if (adminData.some((a) => a.email === email)) {
+    userRole = "admin";
+  } else if (userData.some((a) => a.email === email)) {
+    userRole = "user";
   }
 
-  next();
+  if (!userRole) {
+    return res.json({ message: "Invalid role" });
+  }
+
+  req.user.role = userRole;
+  // console.log(req.user.role);
+  return next();
 };
 
 app.get("/adminaccessreq", authenticateJwt, checkUserRole, (req, res) => {
@@ -91,7 +100,7 @@ app.post("/reqadmin", authenticateJwt, (req, res) => {
     JSON.stringify(adminAccess),
     "utf-8"
   );
-  res.json({ message: "Admin access requested successfully" });
+  return res.json({ message: "Admin access requested successfully" });
 });
 
 app.post("/superadmin", authenticateJwt, checkUserRole, (req, res) => {
@@ -125,15 +134,15 @@ app.post("/superadmin", authenticateJwt, checkUserRole, (req, res) => {
           JSON.stringify(adminAccess),
           "utf-8"
         );
-        res.json(`Admin access denied for ${email}`);
+        return res.json(`Admin access denied for ${email}`);
     }
   } else {
-    res.json("Invalid user - Not Superadmin");
+    return res.json("Invalid user - Not Superadmin");
   }
 });
 
 app.post("/validate", authenticateJwt, (req, res) => {
-  res.json({ message: "Token is valid" });
+  return res.json({ message: "Token is valid" });
 });
 
 app.post("/login", (req, res) => {
@@ -150,30 +159,36 @@ app.post("/login", (req, res) => {
     role = "user";
   else role = null;
 
+  if (!role) {
+    return res.json({ message: "Invalid credentials" });
+  }
+
   const token = jwt.sign({ email, role }, SECRET, {
     expiresIn: tokenExpiresIn,
   });
-  res.cookie("authToken", token, { httpOnly: true });
+  res.cookie("authToken", token, {
+    httpOnly: true,
+    expiresIn: tokenExpiresIn,
+  });
+
   res.cookie("role", role, { httpOnly: true });
 
-  if (!role) {
-    return res.status(403).json({ message: "Invalid credentials" });
-  }
-
-  return res
-    .status(200)
-    .json({role: role, message: `${role} logged in successfully`, token });
+  return res.json({
+    role: role,
+    message: `${role} logged in successfully`,
+    token,
+  });
 });
 
 app.post("/signup", (req, res) => {
   const { firstName, lastName, email, mobileNo, password } = req.body;
   if (!firstName || !lastName || !email || !mobileNo || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.json({ message: "All fields are required" });
   }
   const user = userData.find((u) => u.email === email);
 
   if (user) {
-    res.status(403).json({ message: "Email id already exists" });
+    return res.json({ message: "Email id already exists" });
   } else {
     const newUser = {
       firstName,
@@ -189,13 +204,12 @@ app.post("/signup", (req, res) => {
     const token = jwt.sign({ email, role: "user" }, SECRET, {
       expiresIn: tokenExpiresIn,
     });
-    res.json({ message: "User created successfully", token });
+    return res.json({ message: "User created successfully", token });
   }
 });
 
 app.get("/dashboard", authenticateJwt, checkUserRole, (req, res) => {
   const { role, email } = req.user;
-
   switch (role) {
     case "superadmin":
       var response = superAdminData.concat(
@@ -204,8 +218,7 @@ app.get("/dashboard", authenticateJwt, checkUserRole, (req, res) => {
           return resp;
         })
       );
-      res.send(response);
-      break;
+      return res.send(response);
 
     case "admin":
       var response = adminData.concat(userData).map((data) => {
@@ -213,23 +226,23 @@ app.get("/dashboard", authenticateJwt, checkUserRole, (req, res) => {
         return resp;
       });
 
-      res.send(response);
-      break;
+      return res.send(response);
 
     case "user":
       const { password, ...resp } = userData.find((a) => a.email === email);
       const data = [];
       data.push(resp);
       data[0].role = "user";
-      console.log(data);
-      res.send(data);
+      // console.log(data);
+      return res.send(data);
   }
 
-  res.status(400).json({ message: "Invalid user" });
+  return res.json({ message: "Invalid user" });
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("authToken");
+  res.clearCookie("authToken", { httpOnly: true });
+  res.clearCookie("role", { httpOnly: true });
   return res.json({ message: "Logout successful" });
 });
 

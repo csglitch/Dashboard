@@ -20,7 +20,7 @@ const AdminPage = () => {
       });
 
       if (response.ok) {
-        console.log("Admin access requested successfully");
+        // console.log("Admin access requested successfully");
       } else {
         console.error("Failed to request admin access");
       }
@@ -39,7 +39,7 @@ const AdminPage = () => {
         throw new Error("Failed to fetch data");
       }
 
-      console.log(globalRole());
+      // console.log(globalRole());
       const data: User[] = await response.json();
       allUsers.length = 0;
       allUsers.push(...data);

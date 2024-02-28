@@ -9,6 +9,7 @@ function App() {
   const [isLoading, setIsLoading] = createSignal(true);
   const [isSignup, setIsSignup] = createSignal(true);
   const [isLogin, setIsLogin] = createSignal(false);
+  const [tokenChecked, setTokenChecked] = createSignal(false);
 
   const toggleFormMode = () => {
     setIsSignup(!isSignup());
@@ -20,17 +21,17 @@ function App() {
         method: "POST",
         credentials: "include",
       });
-
+      // console.log(response);
       if (response.ok) {
-        console.log(response);
         setIsLogin(true);
       } else {
         handleLogout();
       }
     } catch (error) {
-      console.error("Error checking token");
+      console.error("Error checking token:", error);
       handleLogout();
     } finally {
+      setTokenChecked(true);
       setIsLoading(false);
     }
   };
@@ -50,8 +51,6 @@ function App() {
     }
   };
 
-
-
   createEffect(() => {
     checkToken();
   }, []);
@@ -62,23 +61,30 @@ function App() {
         <div>Loading...</div>
       ) : (
         <>
-          {isLogin() ? (
+          {tokenChecked() && (
             <>
-              <AdminPage />
-              <button onClick={handleLogout}>Logout</button>
-            </>
-          ) : (
-            <>
-              {isSignup() ? (
-                <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin} />
+              {isLogin() ? (
+                <>
+                  <AdminPage />
+                  <button onClick={handleLogout}>Logout</button>
+                </>
               ) : (
-                <SignUpForm isSignup={isSignup()} setIsSignup={setIsSignup} />
+                <>
+                  {isSignup() ? (
+                    <LoginForm isLogin={isLogin()} setIsLogin={setIsLogin} />
+                  ) : (
+                    <SignUpForm
+                      isSignup={isSignup()}
+                      setIsSignup={setIsSignup}
+                    />
+                  )}
+                  <button onClick={toggleFormMode}>
+                    {isSignup()
+                      ? "New user? Sign Up"
+                      : "Already have an account? Login"}
+                  </button>
+                </>
               )}
-              <button onClick={toggleFormMode}>
-                {isSignup()
-                  ? "New user? Sign Up"
-                  : "Already have an account? Login"}
-              </button>
             </>
           )}
         </>
